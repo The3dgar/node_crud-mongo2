@@ -14,8 +14,9 @@
 </head>
 
 <body>
-  <h1>Header</h1>
-  <main class="container">
+  {{>navigation}}
+
+  <main class="container p-4">
     {{>errors}}
     {{>messages}}
     {{{body}}}
