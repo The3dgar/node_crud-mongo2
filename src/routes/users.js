@@ -1,14 +1,23 @@
 const express = require('express')
 const router = express.Router()
 const User = require('../models/User')
+const passport = require('passport')
 
 router.get('/users/signin', (req, res) => {
   res.render('users/signin')
 })
 
+// por defecto es local
+router.post('/users/signin', passport.authenticate('local', {
+  successRedirect: '/notes',
+  failureRedirect: '/users/signin',
+  failureFlash: true //para enviar mensajes flash
+}))
+
 router.get('/users/signup', (req, res) => {
   res.render('users/signup')
 })
+
 router.post('/users/signup', async (req, res) => {
   const { name, password, email, confirm_password } = req.body
   const errors = []
@@ -32,7 +41,7 @@ router.post('/users/signup', async (req, res) => {
   } else {
     const emailUser = await User.findOne({ "email": email })
     if (emailUser) {
-      req.flash('error_msg', 'Correo en uso')
+      req.flash('errors_msg', 'Correo en uso')
       res.redirect('/users/signup')
     } else {
       const newUser = new User({ name, email, password })
