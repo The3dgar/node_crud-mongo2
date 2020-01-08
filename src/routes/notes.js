@@ -6,7 +6,7 @@ const { isAuthenticated } = require('../helpers/auth')
 // colocar el metodo isAuthenticated a cada ruta que queremos asegurar
 
 router.get('/notes', isAuthenticated, async (req, res) => {
-  const notes = await Note.find().sort({ date: -1 })
+  const notes = await Note.find({userId: req.user.id}).sort({ date: -1 })
   res.render('notes/all-notes', { notes })
 
 })
@@ -33,6 +33,8 @@ router.post('/notes/new-note', isAuthenticated, async (req, res) => {
     })
   } else {
     const newNote = new Note({ title, description })
+    // al momento de authenticar nosotros hemos creado un req.user
+    newNote.userId = req.user.id
     await newNote.save()
     req.flash('success_msg', 'Nota Agregada satisfactoriamente')
     res.redirect('/notes')
